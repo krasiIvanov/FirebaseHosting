@@ -2,7 +2,7 @@
 $(function (){
 
     loadMachines();
-  
+    
 });
 
 //---------------CHART------------------------
@@ -43,6 +43,7 @@ function initChart(data){
                     
                     loadJsonFlow(index)
                     
+                    addBreadcrumb("Flow")
                 }
                 
             }
@@ -53,6 +54,8 @@ function initChart(data){
 
 //-------------------END CHART FUNCTION---------------------- 
 
+
+//---------------FLOW CHART------------------------
 function initFlowChart(data){
 
     $('#main-container').empty();
@@ -104,7 +107,63 @@ function initFlowChart(data){
         }
         });
 }
+//-------------------END FLOW CHART FUNCTION---------------------- 
 
+//----------------------DRINKS CHART------------------------
+
+function initDrinkChart(){
+
+    var labels=[];
+    var values=[];
+
+    $('#recipe-list a')
+
+    console.log(previousValue);
+
+    $('#main-container').empty();
+    $('#main-container').append($('<canvas></canvas>').attr('id','drinksChart'))
+
+    var ctx = document.getElementById("drinksChart").getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+            datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true
+                    }
+                }]
+            }
+        }
+    });
+
+
+}
+//-----------------------END DRINKS CHART FUNCTION------------------------
 
 function loadJsonFlow(index){
 
@@ -137,6 +196,26 @@ function loadChartJson (machineId) {
     });
 }
 
+
+function getRecipes(machineId){
+
+    $.ajax({
+
+        type:'GET',
+        url:'https://us-central1-recipeturnik-v2.cloudfunctions.net/getRecipes/'+machineId,
+        dataType:'json',
+        success:function(data){
+           
+            createRecipes(data);
+
+        }
+
+    });
+
+}
+
+
+
 //Get Json data for machines
 function loadMachines(){
 
@@ -168,9 +247,10 @@ function loadDOMMachines(machines) {
                             $('#machine-ul li .active').removeClass('active');
                             var currentMachine = $(this);
                             currentMachine.addClass('active');
-                            $('#main-container').empty();
-
+                            $('#main-container').empty();                           
                             loadButtons();
+                            addMachineBreadcrumb(currentMachine[0].text)
+
                         })
                     )
                 )  
@@ -180,6 +260,115 @@ function loadDOMMachines(machines) {
     //$('#machine-ul li:first-child a').click();
 }
 
+
+
+
+//--------------CREATE BREADCRUMB-----------------------
+
+function addBreadcrumb(item){
+
+    $('#breadcrumb').append($('<li></li>').addClass('breadcrumb-item active').attr('aria-current','page').text(item));
+
+}
+
+function addMachineBreadcrumb(item){
+
+    $('#breadcrumb').empty()
+
+    $('#breadcrumb').append($('<li></li>').addClass('breadcrumb-item active').attr('aria-current','page').text('Home'));
+    $('#breadcrumb').append($('<li></li>').addClass('breadcrumb-item active').attr('aria-current','page').text(item));
+
+}
+
+
+
+function createBreadcrumb(){
+
+    
+
+    var $this = $(this);
+    
+    var $bc = $(".breadcrumb");
+    
+    var previousValue = $bc.html();
+    
+    $bc.html('')
+
+    $this.parents('li').each(function (n, li) {
+        //we make a copy of the child anchor as we will want the same behaviour on our
+        //breadcrumb.
+        var $a = $(li).children('a').clone();
+        //and we attach the clone after the previous clone if there is any. We also
+        //insert a separator.
+        $bc.append(' / ', $a);
+    });
+
+    //Once we are done we attach our old value to the beginning of the breadcrumb.
+    $bc.prepend(previousValue);
+
+   
+    return false;
+
+   
+
+}
+
+//--------------END BREADCRUMB FUNCTIONS-----------------------
+
+function addDOMRecipe(){
+    var machineId= $('#machine-ul li .active').attr('id');
+
+    $('#main-container').append(
+        $('<div></div>')
+            .addClass('container d-flex justify-content-center')
+            .append($('<div></div>')
+                .addClass('card col-lg-6 col-md-6 col-sm-12')
+                .append($('<div></div>')
+                .addClass('card-header row')
+                .append($('<span></span>').addClass('pull-right float-right').append($('<i></i>').addClass('fas fa-chart-bar').on('click',function(){
+                    initDrinkChart();
+                }))))
+                .append($('<div></div>')
+                    .addClass('card-body')
+                        .append($('<div></div>')
+                        .attr('id','recipe-list')
+                        .addClass('list-group list-group-flush')))));
+   
+    var machineId= $('#machine-ul li .active').attr('id');
+
+    getRecipes(machineId);
+    
+}
+
+function createRecipes(data){
+    
+    $.each(data,function(i, recipe){
+
+        //DRINK COUNT INDEX
+        var count=recipe[5];
+     
+        $('#recipe-list').append($('<a></a>').addClass('list-group-item list-group-item-action').attr('href','#').text(i)
+                        .append($('<span></span>').addClass('badge badge-primary badge-pill float-right').text(count)).on('click',function(){
+
+                            $('#recipe-list').empty();
+                            addBreadcrumb(i);
+                            recipeProfile(recipe);
+                        }))
+
+    })
+}
+
+function recipeProfile(recipe){
+
+    
+    $.each(recipe,function(i,data){
+        
+        $('#recipe-list').append($('<a></a>').addClass('list-group-item list-group-item-action').attr('href','#').text(i+': '+data));
+
+    })
+
+}
+//load buttons for each machine
 function loadButtons(){
 
     $("#main-container")
@@ -197,7 +386,9 @@ function loadButtons(){
                           $('#main-container').empty();
                           $('#main-container').append($('<canvas></canvas>').attr('id','lineChart'))
                            var machineId= $('#machine-ul li .active').attr('id');
-                          loadChartJson(machineId) 
+                          loadChartJson(machineId)
+                          var bc='Espresso System History';
+                          addBreadcrumb(bc) 
                         })
                     )
                 )            
@@ -228,6 +419,11 @@ function loadButtons(){
                         .attr('href', '#')
                         .attr('id','recipe-btn')                         
                         .text('Recipe')
+                        .on('click',function(){
+                            $('#main-container').empty()
+                            addDOMRecipe();
+                            addBreadcrumb('Recipe')
+                        })
                     )
                 )            
             )

@@ -20,5 +20,15 @@
     overflow-y: auto;
 }
 
+.nav-link.active{
 
+    background: #e03a3a;
+    color: white;
+}
+
+.center-card{
+    margin: 0 auto; 
+    float: none; 
+    margin-bottom: 10px; 
+}
 

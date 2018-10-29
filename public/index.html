@@ -6,14 +6,15 @@
     <title>Genesis</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">    
     <link rel="stylesheet" type="text/css" media="screen" href="css/mdb.min.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="css/style.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
-
+    
   </head>
   <body>
 
-    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0" style="min-height: 50px;">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Genesis</a>
      
     </nav>
@@ -39,33 +40,42 @@
 
     <main class="col-lg-10 col-md-9 ml-sm-auto pt-2 px-4" role="main">
       
-      <div id="main-container" class="row">
+      <nav aria-label="breadcrumb">
+        <ol id='breadcrumb' class="breadcrumb">
+          <li class="breadcrumb-item ">Home</li>
+         <!-- 
+           <li class="breadcrumb-item"><a href="#">Page1</a></li>
+           <li class="breadcrumb-item active" aria-current="page">Page2</li>
+          -->
+        </ol>
+      </nav>
 
-        
-         
+
+      <div id="main-container" class="row">
+          
         <!--
-        <div class="col-lg-4 col-md-6 col-sm-12">
-          <div class="card">
-            <div class="card-body">
-              <a href="#">Espresso System history</a>
+        <div class="container d-flex justify-content-center">
+           
+          <div class="card col-lg-6 col-md-6 col-sm-12">
+              <div class="card-header row">
+                <span class="pull-right float-right"><i class="fas fa-chart-bar"></i></span>
+              </div>
+            <div class="card-body ">
+              
+              <div class="list-group list-group-flush">
+                <a class="list-group-item list-group-item-action" href="#">3x1<span class="badge badge-primary badge-pill float-right">14</span></a>
+                <a class="list-group-item list-group-item-action" href="#">Еспресо</a>
+                <a class="list-group-item list-group-item-action" href="#">Горещ шоколад</a>
+                <a class="list-group-item list-group-item-action" href="#">Капучино</a>
+              </div>
+  
             </div>
+    
           </div>
-        </div>
-        <div class="col-lg-4 col-md-6 col-sm-12">
-          <div class="card">
-            <div class="card-body">
-              <a href="#">Machine Profile</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 col-sm-12">
-          <div class="card">
-            <div class="card-body">
-              <a href="#">Recipe</a>
-            </div>
-          </div>
+      
         </div>
       -->
+
       </div>
 
     </main>
@@ -93,6 +103,7 @@
     <!-- MAIN JAVASCRIPT -->
     <script src="scripts/main.js"></script>
 
+    
 
   </body>
 </html>
