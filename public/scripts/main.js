@@ -116,10 +116,13 @@ function initDrinkChart(){
     var labels=[];
     var values=[];
 
-    $('#recipe-list a')
-
-    console.log(previousValue);
-
+    $('#recipe-list a').each(function(){
+            
+        labels.push(this.firstChild.data);
+        values.push(this.lastChild.textContent);        
+       
+    })
+    
     $('#main-container').empty();
     $('#main-container').append($('<canvas></canvas>').attr('id','drinksChart'))
 
@@ -127,10 +130,10 @@ function initDrinkChart(){
     var myChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+            labels: labels,
             datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
+                label: 'Drinks count',
+                data: values,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
@@ -206,8 +209,8 @@ function getRecipes(machineId){
         dataType:'json',
         success:function(data){
            
-            createRecipes(data);
-
+            //createRecipes(data);
+            addDrinksDOM(data)
         }
 
     });
@@ -261,7 +264,60 @@ function loadDOMMachines(machines) {
 }
 
 
+function addDrinksDOM(data){
 
+    $('#main-container')
+        .append($('<div></div>')
+        .addClass('container-fluid')
+        .append($('<div></div>')
+            .addClass('row text-center text-lg-left')
+            .attr('id','drinks-container')           
+        )
+    )
+
+    $.each(data,function(i,recipe){
+
+        var img=recipe[3];
+
+        $('#drinks-container')
+            .append($('<div></div>')
+            .addClass('col-lg-3 col-md-4 col-xs-6')
+                .append($('<a></a>')
+                .addClass('d-block mb-4 h-100 d-flex justify-content-center')
+                .attr('href','#')
+                    .append($('<img>')
+                    .addClass('drink-img img-fluid img-thumbnail')
+                    .attr('src','assets/'+img)
+                    .attr('alt','')
+                    .on('click',function(){
+                        
+                        initModal(recipe,i);
+
+                    })    
+                )
+            ).append($('<div></div>').addClass('d-flex justify-content-center').text(i))        
+        )
+
+    })
+}
+
+
+function initModal(data,name){
+
+    $('#modalTitle').text(name)
+    $('.list-group').empty()
+    $.each(data,function(i,recipe){
+
+        $('.list-group')
+            .append($('<a></a>')
+            .addClass('list-group-item list-group-item-action waves-effect')
+            .attr('href','#')
+            .text(i+': '+recipe))
+
+    })
+
+    $('#drinks-modal').modal('show'); 
+}
 
 //--------------CREATE BREADCRUMB-----------------------
 
@@ -309,8 +365,6 @@ function createBreadcrumb(){
    
     return false;
 
-   
-
 }
 
 //--------------END BREADCRUMB FUNCTIONS-----------------------
@@ -324,8 +378,9 @@ function addDOMRecipe(){
             .append($('<div></div>')
                 .addClass('card col-lg-6 col-md-6 col-sm-12')
                 .append($('<div></div>')
-                .addClass('card-header row')
+                .addClass('card-header row menu-header')
                 .append($('<span></span>').addClass('pull-right float-right').append($('<i></i>').addClass('fas fa-chart-bar').on('click',function(){
+                    addBreadcrumb('Chart')
                     initDrinkChart();
                 }))))
                 .append($('<div></div>')
@@ -347,10 +402,11 @@ function createRecipes(data){
         //DRINK COUNT INDEX
         var count=recipe[5];
      
-        $('#recipe-list').append($('<a></a>').addClass('list-group-item list-group-item-action').attr('href','#').text(i)
+        $('#recipe-list').append($('<a></a>').addClass('list-group-item list-group-item-action').attr('href','#').attr('value',i).text(i)
                         .append($('<span></span>').addClass('badge badge-primary badge-pill float-right').text(count)).on('click',function(){
 
                             $('#recipe-list').empty();
+                            $('.card-header').empty();
                             addBreadcrumb(i);
                             recipeProfile(recipe);
                         }))
@@ -361,6 +417,7 @@ function createRecipes(data){
 function recipeProfile(recipe){
 
     
+
     $.each(recipe,function(i,data){
         
         $('#recipe-list').append($('<a></a>').addClass('list-group-item list-group-item-action').attr('href','#').text(i+': '+data));
@@ -368,6 +425,15 @@ function recipeProfile(recipe){
     })
 
 }
+
+
+function addDOMProfile(){
+
+    $('#main-container')
+
+
+}
+
 //load buttons for each machine
 function loadButtons(){
 
@@ -404,6 +470,11 @@ function loadButtons(){
                         .attr('href', '#')
                         .attr('id','machine-profile-btn')                         
                         .text('Machine Profile')
+                        .on('click', function(){
+                            $('#main-container').empty();
+                            addBreadcrumb('Machine Profile');
+                            addDOMProfile();
+                        })
                     )
                 )            
             )
@@ -421,7 +492,9 @@ function loadButtons(){
                         .text('Recipe')
                         .on('click',function(){
                             $('#main-container').empty()
-                            addDOMRecipe();
+                            //addDOMRecipe();
+                            var machineId= $('#machine-ul li .active').attr('id');
+                            getRecipes(machineId)
                             addBreadcrumb('Recipe')
                         })
                     )

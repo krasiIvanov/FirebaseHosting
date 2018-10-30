@@ -26,9 +26,20 @@
     color: white;
 }
 
-.center-card{
-    margin: 0 auto; 
-    float: none; 
-    margin-bottom: 10px; 
+.sidebar .nav-link{
+    font-weight: 600;
+    padding-left: 30px;
 }
 
+.menu-header{
+    min-height: 50px;
+}
+
+.drink-img{
+    max-width: 55%;
+    border: 0;
+}
+
+.btn-secondary{
+    background-color: #212121 !important ;
+}
