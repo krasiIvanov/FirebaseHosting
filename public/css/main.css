@@ -43,3 +43,34 @@
 .btn-secondary{
     background-color: #212121 !important ;
 }
+.zi-1{
+
+    z-index: 1;
+
+}
+
+.carousel-control-next, .carousel-control-prev {
+    color: black;
+    text-align: center;
+}
+.carousel-control-prev, .carousel-control-next{
+
+    width: 7%;
+    top:110px;
+}
+
+
+
+.marg-b-0{
+    margin-bottom:0; 
+}
+
+.min-ht{
+
+    min-height:710px
+
+}
+
+.icon-pad-lt{
+    padding-left: 20px;
+}
