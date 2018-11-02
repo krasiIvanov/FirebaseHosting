@@ -9,62 +9,73 @@ $(function (){
 
 //Get all machines serial numbers
 function loadMachines(){
-
+    showSpiner();
     $.ajax({
         type: 'GET',
         url: 'https://us-central1-recipeturnik-v2.cloudfunctions.net/getMachines',
         dataType: 'json',
         success: function (machines) {
             loadDOMMachines(machines);
+            hideSpinner();
         }
     });
-
 }
 //Get all drinks data 
 function getRecipes(machineId){
-
+    showSpiner();
     $.ajax({
-
         type:'GET',
         url:'https://us-central1-recipeturnik-v2.cloudfunctions.net/getRecipes/'+machineId,
         dataType:'json',
-        success:function(data){
-           
+        success:function(data){          
             //createRecipes(data);
             addDrinksDOM(data)
+            hideSpinner();
         }
-
     });
 }
 //Get data for Flow chart
 function loadJsonFlow(index){
-
+    showSpiner();
     var machineId= $('#machine-ul li .active').attr('id');
 
     $.ajax({
         type:'GET',              
         url:'https://us-central1-recipeturnik-v2.cloudfunctions.net/getFlow/'+machineId+'/'+index,
         dataType:"json",       
-        success:function(data){           
-           
+        success:function(data){                     
             initFlowChart(data);
+            hideSpinner()
         }
     });
 }
 //Get data for avg. chart 
 function loadChartJson (machineId) {
-    
+    showSpiner();
     $.ajax({
         type:'GET',              
         url:'https://us-central1-recipeturnik-v2.cloudfunctions.net/getInfo/'+machineId,
         dataType:"json",       
-        success:function(data){           
-           
+        success:function(data){                     
             initChart(data);
+            hideSpinner();
         }
     });
 }
 
+function getMachineProfile(machineId){
+
+    showSpiner();
+    $.ajax({
+        type:'GET',              
+        url:'https://us-central1-recipeturnik-v2.cloudfunctions.net/getMachineProfile/'+machineId,
+        dataType:"json",      
+        success:function(data){                     
+            addDomMachineProfile(data);
+            hideSpinner();
+        }
+    });
+}
 //---------------------------------------------------END AJAX REQUEST--------------------------------------
 
 
@@ -108,8 +119,8 @@ function initChart(data){
                     var index=activePoints[0]._index;
                     
                     loadJsonFlow(index)
-                    
-                    addBreadcrumb("Flow")
+                    var currIndex=index+1;
+                    addBreadcrumb("Flow: "+ currIndex)
                 }
                 
             }
@@ -170,20 +181,16 @@ function initFlowChart(data){
         });
 }
 
-
 //Drinks chart
 function initDrinkChart(data){
 
     var labels=[];
     var values=[];
 
-    
     $.each(data,function(i,recipe){
 
         labels.push(i)
         values.push(recipe[5])
-
-
     })
     
     $('#main-container').empty();
@@ -203,7 +210,12 @@ function initDrinkChart(data){
                     'rgba(255, 206, 86, 0.2)',
                     'rgba(75, 192, 192, 0.2)',
                     'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(0, 255, 255,0.2)',
+                    'rgba(191, 0, 255,0.2)',
+                    'rgba(102, 255, 153,0.2)',
+                    'rgba(255, 102, 140,0.2)',
+                    'rgb(255, 255, 0,0.2)'
                 ],
                 borderColor: [
                     'rgba(255,99,132,1)',
@@ -211,7 +223,12 @@ function initDrinkChart(data){
                     'rgba(255, 206, 86, 1)',
                     'rgba(75, 192, 192, 1)',
                     'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(0, 255, 255)',
+                    'rgba(191, 0, 255)',
+                    'rgba(102, 255, 153)',
+                    'rgba(255, 102, 140)',
+                    'rgb(255, 255, 0)'
                 ],
                 borderWidth: 1
             }]
@@ -226,11 +243,9 @@ function initDrinkChart(data){
             }
         }
     });
-
-
 }
 
-//---------------------------------------------------END CHARTS------------------------------------------------
+//---------------------------------------------------END CHARTS-----------------------------------------------
 
 
 //---------------------------------------------------DOM MANIPULATIONS-----------------------------------------
@@ -280,12 +295,7 @@ function loadButtons(){
                         .attr('id','system-history-btn')                        
                         .text('Espresso System History')
                         .on('click',function(){                         
-                          $('#main-container').empty();
-                          $('#main-container').append($('<canvas></canvas>').attr('id','lineChart'))
-                           var machineId= $('#machine-ul li .active').attr('id');
-                          loadChartJson(machineId)
-                          var bc='Espresso System History';
-                          addBreadcrumb(bc) 
+                            ESHButton();
                         })
                     )
                 )            
@@ -302,9 +312,7 @@ function loadButtons(){
                         .attr('id','machine-profile-btn')                         
                         .text('Machine Profile')
                         .on('click', function(){
-                            $('#main-container').empty();
-                            addBreadcrumb('Machine Profile');
-                            addDOMProfile();
+                            machineProfileBtn()
                         })
                     )
                 )            
@@ -322,11 +330,7 @@ function loadButtons(){
                         .attr('id','recipe-btn')                         
                         .text('Recipe')
                         .on('click',function(){
-                            $('#main-container').empty()
-                            //addDOMRecipe();
-                            var machineId= $('#machine-ul li .active').attr('id');
-                            getRecipes(machineId)
-                            addBreadcrumb('Recipe')
+                            recipeButton();
                         })
                     )
                 )            
@@ -338,8 +342,6 @@ function loadButtons(){
 //Greate drinks
 function addDrinksDOM(data){
 
-    
-
     var sortedData=[];
     for(var recipe in data){
         sortedData.push([recipe,data[recipe]['Position']]);
@@ -349,8 +351,7 @@ function addDrinksDOM(data){
         return a[1]-b[1];
     });
 
-    console.log(sortedData)
-
+   
     $('#main-container')
         .append($('<div></div>').addClass('carousel-control-prev zi-1').append($('<a></a>').attr('href','#prev-page').attr('id','prev-page').attr('data-slide','prev')
             .append($('<img>').attr('src','assets/pointer_left.png'))))
@@ -361,7 +362,7 @@ function addDrinksDOM(data){
         .append($('<div></div>').addClass('row').append($('<i></i>').addClass('fas fa-chart-bar fa-2x icon-pad-lt')
             .on('click',function(){
                 addBreadcrumb('Chart')
-                initDrinkChart();
+                initDrinkChart(data);
 
             })))
         .append($('<div></div>')
@@ -369,9 +370,11 @@ function addDrinksDOM(data){
             .attr('id','drinks-container')           
         )
     )
-    $.each(data,function(i,recipe){
+    $.each(sortedData,function(i,recipe){
 
-        var img=recipe[3];
+        var currentRecipe=data[recipe[0]]
+
+        var img=currentRecipe[3];
 
         $('#drinks-container')
             .append($('<div></div>')
@@ -379,17 +382,18 @@ function addDrinksDOM(data){
                 .append($('<a></a>')
                 .addClass('d-block mb-4 h-90 d-flex justify-content-center marg-b-0')
                 .attr('href','#')
+                    .append($('<div></div>').addClass('centered').text(currentRecipe[5]))
                     .append($('<img>')
                     .addClass('drink-img img-fluid img-thumbnail')
                     .attr('src','assets/'+img)
                     .attr('alt','')
                     .on('click',function(){
                         
-                        initModal(recipe,i);
+                        initModal(currentRecipe,recipe[0]);
 
                     })    
                 )
-            ).append($('<div></div>').addClass('d-flex justify-content-center ').append($('<span></span>').addClass('zi-1').text(i)))        
+            ).append($('<div></div>').addClass('d-flex justify-content-center ').append($('<span></span>').addClass('drink-title').text(recipe[0])))        
         )
 
     })
@@ -401,7 +405,15 @@ function addDrinksDOM(data){
 //Add links to breadcrumb
 function addBreadcrumb(item){
 
-    $('#breadcrumb').append($('<li></li>').addClass('breadcrumb-item active').attr('aria-current','page').text(item));
+    var prevIndex=$('#breadcrumb .breadcrumb-item').last().text();
+    $('#breadcrumb .breadcrumb-item').last().remove();
+    $('#breadcrumb').append($('<a></a>').addClass('breadcrumb-item').attr('href','#').text(prevIndex).on('click',function(){
+        var currentIndex=$(this);
+        currentIndex.addClass('selected')
+        breadcrumbProccess(this.text)
+
+    }));
+    $('#breadcrumb').append($('<span></span>').addClass('breadcrumb-item').text(item));
 
 }
 
@@ -409,9 +421,10 @@ function addBreadcrumb(item){
 function addMachineBreadcrumb(item){
 
     $('#breadcrumb').empty()
-
-    $('#breadcrumb').append($('<li></li>').addClass('breadcrumb-item active').attr('aria-current','page').text('Home'));
-    $('#breadcrumb').append($('<li></li>').addClass('breadcrumb-item active').attr('aria-current','page').text(item));
+    $('#breadcrumb').append($('<a></a>').addClass('breadcrumb-item').attr('href','#').text('Home').on('click',function(){
+        breadcrumbProccess(this.text)
+    }));
+    $('#breadcrumb').append($('<span></span>').addClass('breadcrumb-item active').text(item));
 
 }
 
@@ -436,7 +449,7 @@ function addDOMRecipe(){
                         .attr('id','recipe-list')
                         .addClass('list-group list-group-flush')))));
    
-    var machineId= $('#machine-ul li .active').attr('id');
+    
 
     getRecipes(machineId);
     
@@ -473,14 +486,98 @@ function recipeProfile(recipe){
     })
 
 }
-//Machine Profile
-function addDOMProfile(){
+//Machine Profile container
+function addDomMachineProfile(data){
+
+    
+    var serialNumber=data['Serial Number']['sn']
+    var softVersion=data['Software Version']['sv']
+    var location=data['Location']['loacation']
+    var totalCounter=data['Total Counter']['total counter']
+
+    var errors=data['Errors'];
+    var errorCounter=0;
+    $.each(errors,function(){
+        errorCounter++;
+    })
+    
+
+    var machineId= $('#machine-ul li .active').attr('id');
 
     $('#main-container')
+        .append($('<div></div>')
+        .addClass('container d-flex justify-content-center')
+        .append($('<div></div>')
+            .addClass('card col-lg-6 col-md-6 col-sm-12')
+            .append($('<div></div>')
+            .addClass('card-header row menu-header')                    
+            )               
+        .append($('<div></div>')
+            .addClass('card-body')
+                .append($('<div></div>')
+                    .attr('id','machine-profile-list')
+                    .addClass('list-group list-group-flush')
+                        .append($('<a></a>')
+                        .addClass('list-group-item list-group-item-action')
+                        .attr('href','#')
+                        .text('Serial Number')
+                            .append($('<span></span>')
+                            .addClass('float-right')
+                            .text(serialNumber)
+                            )
+                    )
+                    .append($('<a></a>')
+                        .addClass('list-group-item list-group-item-action')
+                        .attr('href','#')
+                        .text('Software version')
+                            .append($('<span></span>')
+                            .addClass('float-right')
+                            .text(softVersion)
+                            )
+                    )
+                    .append($('<a></a>')
+                        .addClass('list-group-item list-group-item-action')
+                        .attr('href','#')
+                        .text('Location')
+                            .append($('<span></span>')
+                            .addClass('float-right')
+                            .text(location))
+                    )
+                    .append($('<a></a>')
+                        .addClass('list-group-item list-group-item-action')
+                        .attr('href','#')
+                        .text('Total counter')
+                            .append($('<span></span>')
+                            .addClass('badge badge-primary badge-pill float-right')
+                            .text(totalCounter)
+                            )
+                    )
+                    .append($('<a></a>')
+                        .addClass('list-group-item list-group-item-action')
+                        .attr('href','#')
+                        .text('Error')
+                        .on('click',function(){
+                            console.log('click')
+                        })
+                            .append($('<span></span>')
+                            .addClass('badge badge-danger badge-pill float-right')
+                            .text(errorCounter)
+                            )
+            )))
+        )
+    )
 
+    
 
 }
+function showSpiner(){
 
+    $('.spinner').show();
+
+}
+function hideSpinner(){
+    $('.spinner').hide();
+}
 //---------------------------------------------------END DOM MANIPULATIONS-----------------------------------------
 
 
@@ -511,7 +608,7 @@ function pagination(){
        }else{
 
          currentPage++;
-         $('.drinks-container div').hide();
+         $('.drinks-container .drink-item').hide();
          var grandTotal = limitPerPage * currentPage;
 
          for (var i = grandTotal - limitPerPage; i < grandTotal; i++) {
@@ -529,7 +626,7 @@ function pagination(){
        }else{
 
          currentPage--;
-         $('.drinks-container div').hide();
+         $('.drinks-container .drink-item').hide();
          var grandTotal = limitPerPage * currentPage;
 
          for (var i = grandTotal - limitPerPage; i < grandTotal; i++) {
@@ -557,6 +654,71 @@ function initModal(data,name){
     })
 
     $('#drinks-modal').modal('show'); 
+}
+//Handle espresso system history button
+function ESHButton(){
+    
+    $('#main-container').empty();
+    $('#main-container').append($('<canvas></canvas>').attr('id','lineChart'));
+    var machineId= $('#machine-ul li .active').attr('id');
+    loadChartJson(machineId);
+    var bc='Espresso System History';
+    addBreadcrumb(bc) ;
+
+}
+
+function machineProfileBtn(){
+
+    $('#main-container').empty();
+    var machineId= $('#machine-ul li .active').attr('id');
+    addBreadcrumb('Machine Profile');
+    getMachineProfile(machineId);
+
+}
+
+//Home breatcrumb link
+function homeBreadcrumb(){
+    $('#main-container').empty()
+    $('#breadcrumb').empty()
+    $('#breadcrumb').append('<span></span>').addClass('breadcrumb-item active').text('Home')
+    $('#machine-ul li .active').removeClass('active');
+    $('#homeLink').addClass('active');
+
+}
+//Handle recipe button
+function recipeButton(){
+
+    $('#main-container').empty();
+    //addDOMRecipe();
+    var machineId= $('#machine-ul li .active').attr('id');
+    getRecipes(machineId);
+    addBreadcrumb('Recipe');
+}
+
+//Handle onClick breadcrumb link
+function breadcrumbProccess(item){
+
+    $('.selected').nextAll().remove()
+    $('.selected').remove()
+
+    switch(item){
+
+        case 'Home':
+            homeBreadcrumb();
+            return;
+        case 'Espresso System History':
+            ESHButton();
+            return;
+        case 'Recipe':
+            recipeButton();
+            return;
+            default:
+                $('#main-container').empty()                
+                addMachineBreadcrumb($('#machine-ul li .active').text())
+                loadButtons();
+            return;            
+    }       
+
 }
 //---------------------------------------------------END METHODS-------------------------------------------------------
 

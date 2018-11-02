@@ -9,7 +9,6 @@
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
     
 }
-
 .sidebar-sticky {
     position: -webkit-sticky;
     position: sticky;
@@ -25,7 +24,6 @@
     background: #e03a3a;
     color: white;
 }
-
 .sidebar .nav-link{
     font-weight: 600;
     padding-left: 30px;
@@ -48,7 +46,6 @@
     z-index: 1;
 
 }
-
 .carousel-control-next, .carousel-control-prev {
     color: black;
     text-align: center;
@@ -58,19 +55,39 @@
     width: 7%;
     top:110px;
 }
-
-
-
+.drink-title{
+    z-index: 1;
+    font-size: larger;
+}
 .marg-b-0{
     margin-bottom:0; 
 }
-
 .min-ht{
 
     min-height:710px
-
 }
-
 .icon-pad-lt{
     padding-left: 20px;
+}
+.centered {
+    position: absolute;
+    top: 82%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 55px;
+    color: #212121;
+}
+
+.spinner{
+    position: absolute;
+    display: none;
+    height: 100px;
+    width: 100px;
+    top: 50%;
+    left: 57%;
+    margin-left: -50px;
+    margin-top: -50px;
+    background: url(/link/to/your/image);
+    background-size: 100%;
+    z-index: 2;
 }
