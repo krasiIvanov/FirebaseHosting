@@ -74,7 +74,7 @@
     top: 82%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 55px;
+    font-size: 50px;
     color: #212121;
 }
 
@@ -90,4 +90,17 @@
     background: url(/link/to/your/image);
     background-size: 100%;
     z-index: 2;
+}
+
+.mch-profile-item{
+
+    font-weight: bold;
+}
+
+.show-pointer{
+    cursor: pointer;
+}
+
+.search-input{
+    padding: 5px 5px 0px 5px;
 }

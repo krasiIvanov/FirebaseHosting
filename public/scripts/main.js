@@ -2,6 +2,7 @@
 $(function (){
 
     loadMachines();
+    search();
     
 });
 
@@ -291,7 +292,7 @@ function loadButtons(){
                 .append($('<div></div>')
                     .addClass('card-body')
                     .append($('<a></a>')                       
-                        .attr('href', '#')
+                        .attr('href', '#espress-system-history')
                         .attr('id','system-history-btn')                        
                         .text('Espresso System History')
                         .on('click',function(){                         
@@ -308,7 +309,7 @@ function loadButtons(){
                 .append($('<div></div>')
                     .addClass('card-body')
                     .append($('<a></a>')
-                        .attr('href', '#')
+                        .attr('href', '#machine-profile')
                         .attr('id','machine-profile-btn')                         
                         .text('Machine Profile')
                         .on('click', function(){
@@ -326,7 +327,7 @@ function loadButtons(){
                 .append($('<div></div>')
                     .addClass('card-body')
                     .append($('<a></a>')
-                        .attr('href', '#')
+                        .attr('href', '#recipe')
                         .attr('id','recipe-btn')                         
                         .text('Recipe')
                         .on('click',function(){
@@ -359,7 +360,7 @@ function addDrinksDOM(data){
             .append($('<img>').attr('src','assets/pointer_right.png'))))
         .append($('<div></div>')
         .addClass('container-fluid min-ht')
-        .append($('<div></div>').addClass('row').append($('<i></i>').addClass('fas fa-chart-bar fa-2x icon-pad-lt')
+        .append($('<div></div>').addClass('row').append($('<i></i>').addClass('fas fa-chart-bar fa-2x icon-pad-lt show-pointer')
             .on('click',function(){
                 addBreadcrumb('Chart')
                 initDrinkChart(data);
@@ -522,7 +523,7 @@ function addDomMachineProfile(data){
                         .attr('href','#')
                         .text('Serial Number')
                             .append($('<span></span>')
-                            .addClass('float-right')
+                            .addClass('float-right mch-profile-item')
                             .text(serialNumber)
                             )
                     )
@@ -531,7 +532,7 @@ function addDomMachineProfile(data){
                         .attr('href','#')
                         .text('Software version')
                             .append($('<span></span>')
-                            .addClass('float-right')
+                            .addClass('float-right mch-profile-item')
                             .text(softVersion)
                             )
                     )
@@ -540,7 +541,7 @@ function addDomMachineProfile(data){
                         .attr('href','#')
                         .text('Location')
                             .append($('<span></span>')
-                            .addClass('float-right')
+                            .addClass('float-right mch-profile-item')
                             .text(location))
                     )
                     .append($('<a></a>')
@@ -636,6 +637,21 @@ function pagination(){
        }
 
      })
+}
+
+
+function search(){
+
+    $(document).ready(function(){
+        $("#search-machine").on("keyup", function() {
+          var value = $(this).val().toLowerCase();
+          
+          $("#machine-ul li:gt(1)").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+          });
+        });
+    });
+
 }
 
 //Open modal for selected drink
