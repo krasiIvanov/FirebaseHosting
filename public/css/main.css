@@ -104,3 +104,10 @@
 .search-input{
     padding: 5px 5px 0px 5px;
 }
+
+.alright{
+    color: green;
+}
+.false{
+    color: red;
+}

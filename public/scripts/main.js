@@ -345,7 +345,9 @@ function addDrinksDOM(data){
 
     var sortedData=[];
     for(var recipe in data){
-        sortedData.push([recipe,data[recipe]['Position']]);
+        if(data[recipe]['Position']>0){
+            sortedData.push([recipe,data[recipe]['Position']]);
+        }      
     }
 
     sortedData.sort(function(a,b){
@@ -491,10 +493,10 @@ function recipeProfile(recipe){
 function addDomMachineProfile(data){
 
     
-    var serialNumber=data['Serial Number']['sn']
-    var softVersion=data['Software Version']['sv']
-    var location=data['Location']['loacation']
-    var totalCounter=data['Total Counter']['total counter']
+    var serialNumber=data['Serial Number']['1']
+    var softVersion=data['Software Version']['1']
+    var location=data['Location']['1']
+    var totalCounter=data['Total Counter']['1']
 
     var errors=data['Errors'];
     var errorCounter=0;
@@ -553,21 +555,22 @@ function addDomMachineProfile(data){
                             .text(totalCounter)
                             )
                     )
-                    .append($('<a></a>')
-                        .addClass('list-group-item list-group-item-action')
-                        .attr('href','#')
-                        .text('Error')
-                        .on('click',function(){
-                            console.log('click')
-                        })
-                            .append($('<span></span>')
-                            .addClass('badge badge-danger badge-pill float-right')
-                            .text(errorCounter)
-                            )
-            )))
+                )
+            )
         )
     )
 
+    $.each(errors,function(i,err){
+
+        if(err==='OK'){
+            $('#machine-profile-list').append($('<a></a>').addClass('list-group-item list-group-item-action').attr('href','#').text(i)
+            .append($('<span></span>').addClass('float-right mch-profile-item alright').text(err)))    
+        }else{
+            $('#machine-profile-list').append($('<a></a>').addClass('list-group-item list-group-item-action').attr('href','#').text(i)
+            .append($('<span></span>').addClass('float-right mch-profile-item false').text(err)))  
+        }
+       
+    })
     
 
 }
