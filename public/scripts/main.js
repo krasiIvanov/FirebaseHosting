@@ -112,6 +112,7 @@ function initChart(data){
             ]
         },
         options: {
+            maintainAspectRatio: false,
             responsive: true,
             onClick:function(event){
                 var activePoints = myLineChart.getElementsAtEvent(event);
@@ -133,8 +134,8 @@ function initChart(data){
 function initFlowChart(data){
 
     $('#main-container').empty();
-
-    $('#main-container').append($('<canvas></canvas>').attr('id','lineChart'))
+    $('#main-container').append($('<div></div>').addClass('container-fluid chart-size').append($('<canvas></canvas>').attr('id','lineChart')))
+    //$('#main-container').append($('<canvas></canvas>').attr('id','lineChart'))
 
     var splitData=data.split(" ");
 
@@ -164,7 +165,7 @@ function initFlowChart(data){
             ]
         },
         options: {
-            
+            maintainAspectRatio: false,
             responsive: true,
 
             scales:{
@@ -195,7 +196,8 @@ function initDrinkChart(data){
     })
     
     $('#main-container').empty();
-    $('#main-container').append($('<canvas></canvas>').attr('id','drinksChart'))
+    $('#main-container').append($('<div></div>').addClass('container-fluid chart-size').append($('<canvas></canvas>').attr('id','drinksChart')))
+    //$('#main-container').append($('<canvas></canvas>').attr('id','drinksChart'))
 
     var ctx = document.getElementById("drinksChart").getContext('2d');
     var myChart = new Chart(ctx, {
@@ -235,6 +237,7 @@ function initDrinkChart(data){
             }]
         },
         options: {
+            maintainAspectRatio: false,
             scales: {
                 yAxes: [{
                     ticks: {
@@ -678,7 +681,8 @@ function initModal(data,name){
 function ESHButton(){
     
     $('#main-container').empty();
-    $('#main-container').append($('<canvas></canvas>').attr('id','lineChart'));
+    $('#main-container').append($('<div></div>').addClass('container-fluid chart-size').append($('<canvas></canvas>').attr('id','lineChart')))
+    //$('#main-container').append($('<canvas></canvas>').attr('id','lineChart'));
     var machineId= $('#machine-ul li .active').attr('id');
     loadChartJson(machineId);
     var bc='Espresso System History';

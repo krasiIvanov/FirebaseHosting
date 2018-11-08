@@ -111,3 +111,6 @@
 .false{
     color: red;
 }
+.chart-size{
+    min-height: 700px;
+}
